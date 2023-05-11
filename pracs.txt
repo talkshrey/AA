@@ -1,0 +1,458 @@
+AA Codes
+
+1. Accounting method
+>Dynamic Tables
+def accounting(n):
+    size=1
+    total=0
+    dcost=0
+    icost=0
+    bank=0
+    print("Elements\tDoubling Copying Cost\tInsertion Cost\tTotal Cost\t\tBank") 
+    for i in range(1,n+1):
+        icost=1 
+        if i>size:
+            size*=2
+            dcost=i-1
+        total=icost+dcost
+        bank+=(3-total) 
+        print(i,"\t\t\t\t",dcost,"\t\t",icost,"\t",total,"\t\t\t",bank) 
+        icost=0
+        dcost=0
+n=int(input("Enter number of elements:")) 
+print("Accounting method") 
+accounting(n)
+
+>Using Stack(Multipop)
+def multipop(s, k, c):
+    for i in range(k):
+        s.pop()
+        c += 1
+    return c
+
+def stack():
+    s = []
+    array = [5, 7, 9, 2, 8, 6, 3]
+    push = 0
+    cost = 0
+    for i in range(len(array)):
+        if array[i] < len(s):
+            cost = multipop(s, array[i], cost)
+        s.append(array[i])
+        push += 1
+        print(s)
+        print('push =', push)
+    amortized_cost = (cost / len(array)) + 1
+    print('Amortized cost:', amortized_cost)
+    print('Asymptotic cost:', cost)
+
+stack()
+
+2. Potential method
+>Dynamic Tables
+def potential_method(n):
+    size = 1
+    cost = 0
+    potential = 0
+    print("Elements\tDoubling Copying Cost\tInsertion Cost\tTotal Cost\t\tPotential")
+    for i in range(1, n+1):
+        if i > size:
+            size *= 2
+            cost += i-1
+            potential += cost
+        cost += 1
+        potential -= 3 - cost
+        print(i, "\t\t\t", cost-i+1, "\t\t", 1, "\t\t", cost, "\t\t\t", potential)
+    amortized_cost = cost + potential/n
+    print('Amortized cost: ', amortized_cost/n)
+n = int(input("Enter the number of elements:"))
+print("Potential Method")
+potential_method(n)
+
+>Using Stack(Multipop)
+def potential_method(s, k):
+    n = len(s)
+    if k > n:
+        k = n
+    cost = k
+    potential = n - k
+    s = s[:-k]
+    return s, cost + 3 * potential
+
+def stack():
+    s = []
+    array = [5, 7, 9, 2, 8, 6, 3]
+    push = 0
+    potential = 0
+    pop_cost=0
+    print("Elements\tPop Cost\tPotential\tTotal Cost\t\tStack")
+    for i in range(len(array)):
+        if array[i] < len(s):
+            s, pop_cost = potential_method(s, len(s) - array[i])
+            potential -= pop_cost
+        s.append(array[i])
+        push += 1
+        potential += 1
+        total_cost = push + potential
+        print(f"{array[i]}\t\t{pop_cost}\t\t{potential}\t\t{total_cost}\t\t{s}")
+    amortized_cost = (push + potential) / len(array)
+    print('Amortized cost:', amortized_cost)
+
+stack()
+  
+3. Aggregate method
+>Dynamic Tables
+def aggregate_method(n):
+    size = 1
+    itr = 0
+    cost = 0
+    total_cost = 0
+    print("Elements\tDoubling Copying Cost\tInsertion Cost\tTotal Cost")
+    for i in range(1, n+1):
+        if i > size:
+            size *= 2
+            # cost += i-1
+            cost = 2 ** (itr)
+            itr += 1
+        # insertion_cost = cost // size + 1
+        insertion_cost = 1
+        total_cost = cost + insertion_cost
+        print(f"{i}\t\t{cost}\t\t\t{insertion_cost}\t\t{total_cost}")
+        cost = 0
+    amortized_cost = total_cost / n
+    
+    print('Amortized cost:', amortized_cost)
+
+n = int(input("Enter the number of elements: "))
+print("Aggregate Method")
+aggregate_method(n)
+
+>Using Stack(Multipop)
+pop=0
+def multipop(s,k):
+    global pop
+    for i in range(k):
+        s.pop()
+        pop+=1 
+    print('pop= ',pop)
+def stack():
+    s=[] 
+    array=[5,7,9,2,8,6,3] 
+    push=0
+    for i in range(len(array)): 
+        if(array[i]<len(s)): 
+            multipop(s,array[i])
+        s.append(array[i]) 
+        push+=1
+        print(s)
+        print('push =',push)
+    cost(push,pop,array)
+def cost(push,pop,array): 
+    avg=(push+pop)/len(array) 
+    print('amortized cost is: ',avg) 
+    print("asymptotic cost is: ",(push+pop))
+stack()
+
+4. Implement hiring problem
+import random
+
+a = [0,1,2,3,4,5,6,7,8,9]
+candidates = []
+
+for i in range(len(a)):
+    temp = random.choice(a)
+    candidates.append(temp)
+    a.remove(temp)
+    
+print(candidates)
+
+hire = []
+for i, num in enumerate(candidates, 1):
+    num = max(candidates[:i])
+    hire.append(num)
+
+print(hire)
+
+5. Randomized QS
+import random
+import time
+c1 ,c2 = 0,0
+def randomized_quicksort(arr):
+    global c1
+
+    if len(arr) <= 1:
+        return arr
+    else:
+        pivot = random.choice(arr)
+        left = [x for x in arr if x < pivot]
+        middle = [x for x in arr if x == pivot]
+        right = [x for x in arr if x > pivot]
+        c1+= len(left)+len(right)
+        return randomized_quicksort(left) + middle + randomized_quicksort(right)
+
+
+def quicksort(arr):
+    global c2
+    
+    if len(arr) <= 1:
+        return arr
+    else:
+        pivot = arr[0]
+        left = []
+        right = []
+        for i in range(1, len(arr)):
+            if arr[i] < pivot:
+                left.append(arr[i])
+                c2+=1
+
+            else:
+                right.append(arr[i])
+                c2+=1
+        return quicksort(left) + [pivot] + quicksort(right)
+
+
+# arr = [random.randint(0,100) for i in range(10000)]
+arr = [1,2,3,4,5,6,7,8,9,10]
+arr1 = arr.copy()
+# print(arr) 
+st = time.time()
+print("Sorted by randomized way:",randomized_quicksort(arr))
+print("Time taken by randomized quicksort:",(time.time() - st) ,"Comparisons :", c1)
+st = time.time()
+print("Sorted by normal way",quicksort(arr1))
+print("Time taken by normal quicksort:" , (time.time()-st)  ,"Comparisons" ,c2)
+
+6. RB insertion
+class Node:
+    def __init__(self, val):
+        self.val = val
+        self.left = None
+        self.right = None
+        self.color = "RED"
+
+def insert(root, val):
+    if not root:
+        return Node(val)
+    
+    if val < root.val:
+        root.left = insert(root.left, val)
+    else:
+        root.right = insert(root.right, val)
+    
+    if root.right and root.right.color == "RED" and (not root.left or root.left.color == "BLACK"):
+        root = rotate_left(root)
+    if root.left and root.left.color == "RED" and root.left.left and root.left.left.color == "RED":
+        root = rotate_right(root)
+    if root.left and root.left.color == "RED" and root.right and root.right.color == "RED":
+        flip_colors(root)
+    
+    return root
+
+def rotate_left(x):
+    y = x.right
+    x.right = y.left
+    y.left = x
+    y.color = x.color
+    x.color = "RED"
+    return y
+
+def rotate_right(x):
+    y = x.left
+    x.left = y.right
+    y.right = x
+    y.color = x.color
+    x.color = "RED"
+    return y
+
+def flip_colors(x):
+    x.color = "RED"
+    x.left.color = "BLACK"
+    x.right.color = "BLACK"
+
+def print_tree(root, level=0):
+    if root:
+        print_tree(root.right, level+1)
+        print('     ' * level, root.val, root.color)
+        print_tree(root.left, level+1)
+
+# initialize an empty tree with a root node
+root = Node(10)
+
+# insert nodes into the tree
+root = insert(root, 5)
+root = insert(root, 15)
+root = insert(root, 3)
+root = insert(root, 7)
+root = insert(root, 13)
+root = insert(root, 18)
+
+# print the tree
+print_tree(root)
+
+7. RB deletion (all cases on static tree)
+
+8. Implementation of ford fulkerson (simple case)
+from collections import defaultdict
+class Graph:
+    def __init__(self, graph):
+        self.graph = graph
+        self.ROW = len(graph)
+
+    def bfs(self, s, t, parent):
+        visited = [False] * self.ROW 
+        queue = []
+        queue.append(s)
+        visited[s] = True
+        while queue:
+            u = queue.pop(0)
+            for ind, val in enumerate(self.graph[u]):
+                if not visited[ind] and val > 0:
+                    queue.append(ind)
+                    visited[ind] = True
+                    parent[ind] = u
+        return visited[t], parent
+
+    def ford_fulkerson(self, source, sink):
+        max_flow = 0
+        parent = [-1] * self.ROW 
+        while True:
+            found_path, parent = self.bfs(source, sink, parent)
+            if not found_path:
+                break
+            path_flow = float("Inf") 
+            s = sink
+            while s != source:
+                path_flow = min(path_flow, self.graph[parent[s]][s])
+                s = parent[s]
+            max_flow += path_flow
+            
+            # Print the augmented path and its minimum value
+            path = [sink]
+            v = sink
+            while v != source:
+                u = parent[v]
+                path.insert(0, u)
+                v = u
+            print("Augmented path: ", " -> ".join(str(x) for x in path), " Minimum flow: ", path_flow)
+            
+            v = sink
+            while v != source:
+                u = parent[v]
+                self.graph[u][v] -= path_flow
+                self.graph[v][u] += path_flow
+                v = u
+        
+        return max_flow
+
+graph = [
+[0, 8, 0, 0, 3, 0], [0, 0, 9, 0, 0, 0], [0, 0, 0, 0, 7, 2], [0, 0, 0, 0, 0, 5], [0, 0, 7, 4, 0, 0], [0, 0, 0, 0, 0, 0],
+]
+
+g = Graph(graph)
+source = 0
+sink = 5
+print("Max Flow: %d " % g.ford_fulkerson(source, sink))
+
+9. KD tree balanced
+class KDTree:
+  def __init__(self,P,d=0):
+    n=len(P)
+    m=n//2
+   
+    P.sort(key = lambda x: x[d])
+    self.point = P[m]
+    self.left=None
+    self.right=None
+    d = (d+1)%len(P[0])
+    if m>0:
+      self.left=KDTree(P[:m],d)
+    if n - (m+1) >0:
+      self.right=KDTree(P[m+1:],d)
+  def __str__(self):
+   Median = self.point
+   left_str = str(self.left) if self.left else " "
+   right_str = str(self.right) if self.right else " "
+   return f"Median: {Median}\nLeft node: {left_str}\nRight node: {right_str}"
+P=[(1,2),(3,4),(5,6),(7,8),(9,10)]
+tree =KDTree(P)
+print(tree)
+
+10. KD tree unbalanced
+import math
+
+class Node:
+    def __init__(self, nums):
+        self.nums = nums
+        self.level = 0
+        self.left = None
+        self.right = None
+
+def create_node(nums):
+    return Node(nums)
+
+def traverse_in_order(curr):
+    if curr is None:
+        return
+    traverse_in_order(curr.left)
+    print(f"({', '.join(map(str, curr.nums))}) ", end="")
+    traverse_in_order(curr.right)
+
+def make_kd_tree(seq, depth=0):
+    if len(seq) == 0:
+        return None
+    
+    k = len(seq[0])
+    dim = depth % k
+   
+    seq.sort(key=lambda x: x[dim])
+    mid = len(seq) // 2
+    mid_elem = seq[mid]
+   
+    root = create_node(mid_elem)
+   
+    left_sub_arr = seq[:mid]
+    right_sub_arr = seq[mid+1:] 
+   
+    root.level = depth
+    root.left = make_kd_tree(left_sub_arr, depth+1)
+    root.right = make_kd_tree(right_sub_arr, depth+1)
+   
+    return root
+
+
+if __name__ == "__main__":
+    seq = [[6,2], [7,1], [2,9], [3,6], [4,8], [8,4], [5,3], [1,5], [9,5]]
+    root = make_kd_tree(seq)
+    traverse_in_order(root)
+
+OR
+
+#UNBALANCED KD TREE
+class KDTree:
+  def _init_(self,P,d=0):
+    if not P:
+      self.point=None
+      self.left=None
+      self.right=None
+    else:
+      self.point=P[0]
+      n = len(P)
+      k = len(P[0])
+      axis = d%k
+      d = (d+1)% k 
+      self.left = KDTree([p for p in P[1: ] if p[axis]<=self.point[axis]], d)
+      self.right = KDTree([p for p in P[1:] if p[axis]> self.point[axis]],d )
+     
+  def print_kdtree(self,d=0,ch='A',node=None):
+    if not node:
+      node = self
+    if not node.point:
+      return 
+    
+    print(ch, ":",node.point)
+    self.print_kdtree(node = node.left, d = d+1,ch= ch + 'L')
+    self.print_kdtree(node = node.right,d=  d+1 ,ch= ch +'R')
+
+P = [(6,2),(7,1),(2,9),(3,6),(4,8),(8,4),(5,3),(1,5),(9,5)]
+tree= KDTree(P)
+tree.print_kdtree()
